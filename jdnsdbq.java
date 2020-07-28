@@ -28,25 +28,52 @@ class jdnsdbq {
   }
 }
 */
-import java.net.HttpsURLConnection;
-
+import javax.net.ssl.HttpsURLConnection;
+import java.net.URL;
+import java.util.Scanner;
+import java.util.HashMap;
+import java.util.Map;
+import java.net.MalformedURLException;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 class jdnsdbq {
   static String API_Key;
-  public static void main(String[] args) {
+  static Scanner uIS = new Scanner(System.in);//UserInputScanner
+  public static void main(String[] args) throws IOException, MalformedURLException {
     //findApiKey();
-    File configFile = "config.txt";
-    from config file get value of API_KEY and assign it to jdnsdbq.API_KEY
-    //////////////
-    URL url = "https://api.dnsdb.info/";
-    HttpsUrlConnection conn = (HttpsURLConnection)url.openConnection();
+//    File configFile = "config.txt";
+//    from config file get value of API_KEY and assign it to jdnsdbq.API_KEY
+//    //////////////
+API_Key = "dce-445b835b1622cabf03e438ebc22ddec6b5877c3d099627bbb846a516ce15";
+//    try {
+      URL url = new URL("https://api.dnsdb.info/");
+  //  } catch (MalformedURLException MalfURLExcep) {
+    //  System.err.println(MalfURLExcep);
+    //}
+    HttpsURLConnection conn = (HttpsURLConnection)url.openConnection();
     Map<String, String> headers = new HashMap<>();
-    headers.put("X-API-Key", API_KEY);
+    headers.put("X-API-Key", API_Key);
     for (String headerKey : headers.keySet()) {
       conn.setRequestProperty(headerKey, headers.get(headerKey));
       conn.setRequestMethod("GET");
     }
+    int responseCode = conn.getResponseCode();
+    if (responseCode == HttpsURLConnection.HTTP_OK) { // success
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					conn.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
 
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+    }
+    else {
+      System.out.println("invalid response code");
   }
+}
 }//main
   /*static void findApiKey() {
     scanFor(File="config.txt", var = "API_KEY",) -> return var.value: else {
