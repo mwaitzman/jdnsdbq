@@ -1,3 +1,10 @@
+/*
+On launch, the program will try to fetch the api key form the config file
+  if it does not find it, it will say that and then prompt the user to enter their API key
+it will then check if the API key is valid and check how many queries are left on the key
+  TODO add responses
+
+*/
 /*import java.net.HttpsURLConnection;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -47,7 +54,7 @@ class jdnsdbq {
 //    //////////////
 API_Key = "dce-445b835b1622cabf03e438ebc22ddec6b5877c3d099627bbb846a516ce15";
 //    try {
-      URL url = new URL("https://api.dnsdb.info/");
+      URL API_url = new URL("https://api.dnsdb.info/");
   //  } catch (MalformedURLException MalfURLExcep) {
     //  System.err.println(MalfURLExcep);
     //}
@@ -56,8 +63,8 @@ API_Key = "dce-445b835b1622cabf03e438ebc22ddec6b5877c3d099627bbb846a516ce15";
     headers.put("X-API-Key", API_Key);
     for (String headerKey : headers.keySet()) {
       conn.setRequestProperty(headerKey, headers.get(headerKey));
-      conn.setRequestMethod("GET");
     }
+    conn.setRequestMethod("GET");
     int responseCode = conn.getResponseCode();
     if (responseCode == HttpsURLConnection.HTTP_OK) { // success
 			BufferedReader in = new BufferedReader(new InputStreamReader(
@@ -73,7 +80,11 @@ API_Key = "dce-445b835b1622cabf03e438ebc22ddec6b5877c3d099627bbb846a516ce15";
     else {
       System.out.println("invalid response code");
   }
+
 }
+  class jdnsdbqInstance {
+    
+  }
 }//main
   /*static void findApiKey() {
     scanFor(File="config.txt", var = "API_KEY",) -> return var.value: else {
