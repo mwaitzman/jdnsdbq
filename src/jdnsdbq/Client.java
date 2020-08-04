@@ -31,7 +31,11 @@ class Client {
       if(OpAPI_Key.isPresent()) {
         String API_Key = OpAPI_Key.get();
         System.out.println("Your API Key is " + API_Key);
-        try {        jlog.ls(testAPIKey(API_Key));}
+        try {
+          String r = (testAPIKey(API_Key)) ? "api key validated successfully" : "invalid api key";
+          jlog.ls(r);
+          r = null;
+        }
         catch(Exception e) {
           System.out.println(":( " + e);
         }
@@ -47,7 +51,7 @@ class Client {
     jlog.ls("end of program");
   }
 
-  static String testAPIKey(String APIKey) throws Exception {
+  static boolean testAPIKey(String APIKey) throws Exception {
     jlog.ls("start of testAPIKey method");
     URL url = new URL(APIroot + "/lookup");
     HttpsURLConnection conn = (HttpsURLConnection)url.openConnection();
@@ -60,7 +64,7 @@ class Client {
   //  return data;
       //String fullResponse = getFullResponse(conn);//data;
       jlog.ls("end of testAPIKey method");
-      return (conn.getResponseCode() == HttpsURLConnection.HTTP_FORBIDDEN);
+      return (conn.getResponseCode() != HttpsURLConnection.HTTP_FORBIDDEN);
     //return new String((HttpsURLConnection conn = (HttpsURLConnection)(new URL(APIroot))-> conn.openConnection() -> conn.getResponseCode() > 299) ? this.getResponseMessage() : this.getErrorStream()  );
     // what the return statement is supposed to do is create a new URL from the String APIroot, then create an HttpsURLConnection from that, then open the connection, get the connection's response code, check if it that code is over 299, getting its response message if it is, and getting its error stream if it is not, and then finally converting the response's value to a string and then returning that string.
   }
