@@ -19,15 +19,18 @@ import java.net.MalformedURLException;
 class Client {
   static jLog jlog = new jLog();
   static String APIroot = "https://api.dnsdb.info/";
-  static Scanner uin = new Scanner(System.in);
+  //static Scanner uin = new Scanner(System.in);
   static String API_key;
   static File configFile;
+  static boolean shouldRun = true;
   public static void main(String[] args) {
     jlog.ls("Starting program (Client.java)");
     configFile = new File("config.txt");
     jlog.ls("created new File object (configFile)");
       doAPIkey();
-
+      while(shouldRun) {
+        doRequest();
+      }
     jlog.ls("end of program");
   }
 
@@ -95,7 +98,7 @@ class Client {
       //throw ex;
     }
     finally {
-      sc.close();
+      sc = null; //Can't close the scanner because for some reason, doing so closes System.in, which can't be reopened :(
     }
   }
 
@@ -187,5 +190,44 @@ class Client {
             .append(content);
 
         return fullResponseBuilder.toString();
+    }
+    public static void doRequest() {
+      //prompt request
+      System.out.println("Waiting for a request:");
+      //TODO if the user doesn't input anything for a while, display a message saying commands that they can use "Stuck? try doing "help"", etc.
+      //handle request
+      String input;
+
+
+         try {
+           BufferedReader userInputReader = new BufferedReader(new InputStreamReader(System.in));
+           //BufferedReader userInputReader = new BufferedReader(new InputStreamReader(System.in));
+           while(true) {
+             if(userInputReader.ready()) {
+               System.out.println("aaa");
+               input = userInputReader.readLine();
+               switch(input) {
+                case "help":
+                  System.out.println("do \"help <command>\" to get more information about a specific command. Type \"listcommands\" to list all available commands.");
+                  break;
+                case "lookup":
+                  //
+                  break;
+                case "summarize":
+                  //
+                  break;
+                case "quit":
+                  System.out.println("Exiting the program...");
+                  shouldRun = false;
+                  return;
+                default:
+                  System.out.println("Unable to resolve your input.");
+                  break;
+              }
+             }
+           }
+         } catch (IOException e) {
+             System.out.println(e);
+           }
     }
 }
