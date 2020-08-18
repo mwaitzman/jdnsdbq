@@ -9,13 +9,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.io.IOException;
 import java.io.Reader;
-//import jdnsdbq.utils.jLog;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Optional;
 import java.util.Scanner;
 import java.net.MalformedURLException;
-//import java.net.HttpURLConnection;
 class Client {
   static jLog jlog = new jLog();
   static String APIroot = "https://api.dnsdb.info/";
@@ -197,6 +195,7 @@ class Client {
       //TODO if the user doesn't input anything for a while, display a message saying commands that they can use "Stuck? try doing "help"", etc.
       //handle request
       String input;
+      int pos;//position
 
 
          try {
@@ -204,11 +203,71 @@ class Client {
            //BufferedReader userInputReader = new BufferedReader(new InputStreamReader(System.in));
            while(true) {
              if(userInputReader.ready()) {
-               System.out.println("aaa");
+               System.out.println("Reader is ready");
                input = userInputReader.readLine();
-               switch(input) {
-                case "help":
-                  System.out.println("do \"help <command>\" to get more information about a specific command. Type \"listcommands\" to list all available commands.");
+               pos = 0;
+//               switch(input)
+                try {
+                  if(input.substring(pos, "help".length()).equals("help")) {
+                    System.out.println("do \"help <command>\" to get more information about a specific command. Type \"listcommands\" to list all available commands.");
+                    return;///////
+                  }
+                }
+                catch(StringIndexOutOfBoundsException e) {
+                  //do nothing, I think (just move on to the next part of the if else block)
+                }
+                //
+                try {
+                  if(input.substring(pos, "listcommands".length()).equals("listcommands")) {
+                    System.out.println("Available commands: help, listcommands,");//TODO add the rest of the commands and short descriptions for each
+                    return;///////
+                  }
+                }
+                catch(StringIndexOutOfBoundsException e) {
+                  //do nothing, I think (just move on to the next part of the if else block)
+                }
+//
+                try {
+                  if(input.substring(pos, "lookup".length()).equals("lookup")) {
+                    pos +="lookup".length()+1;//the +1 is to allow a single space to separate the parameters
+
+                    try {
+                      if(input.substring(pos, pos+"rate_limit".length()).equals("rate_limit")) {
+                        System.out.println("Querying the rate limit of your API Key...");
+                        ////
+                        ////
+                        ////
+                        URL url = new URL(APIroot + "/lookup/rate_limit");
+                        HttpsURLConnection conn = (HttpsURLConnection)url.openConnection();
+                        conn.setRequestProperty("X-API-Key", API_key);
+                        BufferedReader in = new BufferedReader(
+                new InputStreamReader(conn.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+
+       System.out.println("Response : -- " + response.toString());
+//                        System.out.println(conn.getContent());
+                        //conn.close();
+                        return;///////
+                      }
+                    }
+                    catch(StringIndexOutOfBoundsException e) {
+                      //do nothing, I think (just move on to the next part of the if else block)
+                    }
+                    return;///////
+                  }
+                }
+                catch(StringIndexOutOfBoundsException e) {
+                  //do nothing, I think (just move on to the next part of the if else block)
+                }
+
+/*                case "listcommands":
+                  //TODO
                   break;
                 case "lookup":
                   //
@@ -223,7 +282,7 @@ class Client {
                 default:
                   System.out.println("Unable to resolve your input.");
                   break;
-              }
+              }*/
              }
            }
          } catch (IOException e) {
