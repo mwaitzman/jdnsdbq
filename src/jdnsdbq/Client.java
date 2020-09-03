@@ -14,6 +14,8 @@ import java.io.FileNotFoundException;
 import java.util.Optional;
 import java.util.Scanner;
 import java.net.MalformedURLException;
+import java.io.FileWriter;
+import java.io.FileReader;
 class Client {
   static jLog jlog = new jLog();
   static String APIroot = "https://api.dnsdb.info/";
@@ -21,10 +23,12 @@ class Client {
   static String API_key;
   static File configFile;
   static boolean shouldRun = true;
+//  static boolean debugMode;//TODO switch to enum or something later to enable only certain things to be logged
   public static void main(String[] args) {
     jlog.ls("Starting program (Client.java)");
+//    debugMode = args[0] == "true" ? true : false;
     configFile = new File("config.txt");
-    jlog.ls("created new File object (configFile)");
+//    jlog.ls("created new File object (configFile)");
       doAPIkey();
       while(shouldRun) {
         doRequest();
@@ -33,27 +37,41 @@ class Client {
   }
 
   static void doAPIkey() {
-    if (APIkeyFoundInFile(configFile) == true) {
-      System.out.println("Successfully retrieved API key with value " + API_key + " from the config file.");
-      try {
-        if (testAPIKey(API_key) == true) {
-          System.out.println("Your API key is valid!");
-          return;
+    try {
+        FileReader fr = new FileReader(configFile);
+//        boolean s = fr.ready();
+        if(fr.ready() == false) {
+          System.out.println("The config file could not be found.");
+          System.out.println("Creating a new configFile...");
+          configFile.createNewFile();
+          System.out.println("Config file successfully created.");
+        }
+        fr.close();
+    }
+    catch(IOException e) {
+      e.printStackTrace();
+    }
+        if (APIkeyFoundInFile(configFile) == true) {
+          System.out.println("Successfully retrieved API key with value " + API_key + " from the config file.");
+          try {
+            if (testAPIKey(API_key) == true) {
+              System.out.println("Your API key is valid!");
+              return;
+            }
+            else {
+              System.out.println("Your API key is invalid.");
+            }
+          }
+          catch(IOException ex) {
+            System.out.println(ex);
+            //throw ex;
+          }
         }
         else {
-          System.out.println("Your API key is invalid.");
-        }
-      }
-      catch(IOException ex) {
-        System.out.println(ex);
-        //throw ex;
-      }
-    }
-    else {
-      //TODO change it so the program won't input the message below if the config file could not be found --maybe use a Boolean instead of boolean for the APIkeyFoundInFile method to accomplish this?
-      System.out.println("Unfortunately, an API key could not be found in the config file.");
-    }
-      doManualAPIkeyInput();
+          //TODO change it so the program won't input the message below if the config file could not be found --maybe use a Boolean instead of boolean for the APIkeyFoundInFile method to accomplish this?
+          System.out.println("Unfortunately, an API key could not be found in the config file.");
+          }
+          doManualAPIkeyInput();
   }
 
   //
@@ -84,7 +102,7 @@ class Client {
     try {
       if (testAPIKey(API_key) == true ) {
         System.out.println("Your API key is valid!");
-        saveAPIkeytoConfigFile();
+        saveAPIkeytoConfigFile(API_key);
       }
       else {
         System.out.println("Your API key was invalid. Trying again...");
@@ -102,9 +120,17 @@ class Client {
 
 
 
-  static void saveAPIkeytoConfigFile() {
+  static void saveAPIkeytoConfigFile(String API_Key){
     //TODO
     System.out.println("saving API key to the config file...");
+    try {
+      FileWriter cFW = new FileWriter(configFile);
+      cFW.write("API_Key " + API_Key);
+      System.out.println("Your API key was successfully saved to the config file.");
+    }
+    catch(IOException ex) {
+      ex.printStackTrace();
+    }
   }
 
 
